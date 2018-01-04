@@ -1,17 +1,17 @@
 <?php namespace DataSelector;
 
 	use Illuminate\Database\Eloquent\Collection;
-	use Illuminate\Database\Eloquent\Model;
+	use Illuminate\Database\Query\Builder;
 
 	/**
 	 * @package DataSelector
 	 */
-	class DataSelector{
+	class Selector{
 
-		use Spatie\Macroable\Macroable;
+		use \Spatie\Macroable\Macroable;
 
 		/**
-		 * @var $this
+		 * @var Builder
 		 */
 		public $query;
 		/**
@@ -32,7 +32,7 @@
 		 * Whether the whole query was canceled
 		 * @var bool
 		 */
-		public $canceled = true;
+		public $canceled = false;
 		/**
 		 * The retrieved data
 		 * @var Collection
@@ -50,14 +50,15 @@
 		public $updatedAtColumn = 'updated_at';
 
 		/**
-		 * @param Model $model
+		 * @param string $model
 		 * @param array|NULL $columns
 		 * @param array|NULL $defaultColumns
 		 * @param bool|FALSE $includeTrashed
 		 */
-		public function __construct(Model $model, array $columns = null, array $defaultColumns = null, $includeTrashed = false){
+		public function __construct($model, array $columns = null, array $defaultColumns = null, $includeTrashed = false){
 			// Start the query
-			$this->query = $model::select($columns ?: ($defaultColumns ?: ['*']));
+			$columnsArray = $columns ?: ($defaultColumns ?: ['*']);
+			$this->query = call_user_func_array([$model, 'select'], [$columnsArray]);
 
 			// Include the trashed ?
 			if($includeTrashed === true){
@@ -124,6 +125,22 @@
 		}
 
 		/**
+		 * Set a new data formatter
+		 * @param $column
+		 * @param $formatter [optional]
+		 */
+		public function format($column, $formatter = null){
+			if(is_array($column)){
+				foreach($column as $format){
+					$this->formatters()->add($format[0], $format[1]);
+				}
+
+			}elseif($formatter){
+				$this->formatters()->add($column, $formatter);
+			}
+		}
+
+		/**
 		 * Add an eager-loading call
 		 * @param $relation
 		 * @param array|NULL $columns
@@ -144,10 +161,15 @@
 		 *  $selector->select("id, name, LEFT(desc, 100)")
 		 * </code>
 		 * @param array|string $columns
+		 * @param array|string $override When TRUE is overrides the current set of columns selected previously
 		 *
 		 * @return $this
 		 */
-		public function select($columns){
+		public function select($columns, $override = false){
+			if($override === true){
+				$this->query->getQuery()->columns = [];
+			}
+
 			if(is_array($columns)){
 				$this->query->select($columns);
 
@@ -183,7 +205,7 @@
 		 *
 		 * @return $this
 		 */
-		public function where(...$args){
+		public function where(... $args){
 			call_user_func_array([$this->query, 'where'], $args);
 
 			return $this;
@@ -203,12 +225,11 @@
 
 		/**
 		 * WHERE IN (id)
-		 * @param $column
 		 * @param $values
 		 *
-		 * @return DataSelector
+		 * @return Selector
 		 */
-		public function ofIds($column, $values){
+		public function ofIds($values){
 			return $this->whereIn('id', $values);
 		}
 
@@ -225,14 +246,14 @@
 		}
 
 		/**
-		 * @return DataSelector
+		 * @return Selector
 		 */
 		public function latestFirst(){
 			return $this->orderBy($this->createdAtColumn, false);
 		}
 
 		/**
-		 * @return DataSelector
+		 * @return Selector
 		 */
 		public function oldestFirst(){
 			return $this->orderBy($this->createdAtColumn);
@@ -240,14 +261,15 @@
 
 		/**
 		 * Data ordering: last modified first
-		 * @return DataSelector
+		 *
+*@return Selector
 		 */
 		public function lastModifiedFirst(){
 			return $this->orderBy($this->updatedAtColumn, true);
 		}
 
 		/**
-		 * @return DataSelector
+		 * @return Selector
 		 */
 		public function lastModifiedLast(){
 			return $this->orderBy($this->updatedAtColumn);

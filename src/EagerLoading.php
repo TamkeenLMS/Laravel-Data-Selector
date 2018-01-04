@@ -7,7 +7,7 @@
 	 */
 	class EagerLoading{
 		/**
-		 * @var DataSelector
+		 * @var Selector
 		 */
 		public $selector;
 		/**
@@ -16,9 +16,9 @@
 		public $list = [];
 
 		/**
-		 * @param DataSelector $selector
+		 * @param Selector $selector
 		 */
-		public function __construct(DataSelector $selector){
+		public function __construct(Selector $selector){
 			$this->selector = $selector;
 		}
 
@@ -31,9 +31,9 @@
 		 *
 		 * @return $this
 		 */
-		public function add($relation, array $columns = ['*'], $where = null, $withTrashed = false){
+		public function add($relation, array $columns = null, $where = null, $withTrashed = false){
 			$this->list[$relation] = [
-				'columns'       => $columns,
+				'columns'       => $columns ?: ['*'],
 				'where'         => $where,
 				'withTrashed'   => $withTrashed
 			];
