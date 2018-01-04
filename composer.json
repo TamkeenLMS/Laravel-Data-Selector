@@ -1,0 +1,21 @@
+{
+  "name": "tamkeenlms/laravel-data-selector",
+  "description": "An extra layer on top of queries to help with selecting and retrieving data from the database.",
+  "type": "library",
+  "require": {
+    "php": ">=5.4",
+    "spatie/macroable": "^1.0"
+  },
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Tamkeen LMS",
+      "email": "tamkeenlms@gmail.com"
+    }
+  ],
+  "autoload": {
+    "psr-4": {
+      "DataSelector\\": "/"
+    }
+  }
+}
