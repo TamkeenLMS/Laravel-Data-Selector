@@ -75,7 +75,7 @@
 		 * @param \Closure $call
 		 */
 		public static function defineWhere($methodName, \Closure $call){
-			static::macro('where' . ucfirst($methodName), $call);
+			return static::macro('where' . ucfirst($methodName), $call);
 		}
 
 		/**
@@ -138,6 +138,8 @@
 			}elseif($formatter){
 				$this->formatters()->add($column, $formatter);
 			}
+
+			return $this;
 		}
 
 		/**
@@ -224,16 +226,6 @@
 		}
 
 		/**
-		 * WHERE IN (id)
-		 * @param $values
-		 *
-		 * @return Selector
-		 */
-		public function ofIds($values){
-			return $this->whereIn('id', $values);
-		}
-
-		/**
 		 * @param $column
 		 * @param bool|TRUE $asc
 		 *
@@ -305,7 +297,7 @@
 				}
 
 			}else{
-				$this->data = clone $this->query->get();
+				$this->data = $this->query->get();
 			}
 
 			// Apply eager-loading

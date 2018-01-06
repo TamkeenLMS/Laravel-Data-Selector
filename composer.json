@@ -1,6 +1,6 @@
 {
   "name": "tamkeenlms/laravel-data-selector",
-  "description": "An extra layer on top of queries to help with selecting and retrieving data from the database.",
+  "description": "An extra layer on top of Laravel's Eloquent to help with selecting and retrieving data from the database.",
   "type": "library",
   "keywords": [
     "laravel", "database"
