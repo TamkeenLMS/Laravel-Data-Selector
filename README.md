@@ -28,7 +28,13 @@ public function scopeRegisteredThisMonth($query){
 With this library you will get to separate these scopes from the model into a cleaner interface, where you can focus better on them, group them into meaningful api-like calls and serve your application logic better!
 
 # How to use it
-For each model you have you will create a Selector class, one that will extend _DataSelector\Selector_, and then you will get to call this selector and ask it for x or y. I suggest you create a new directory for your selectors under _/app_.
+## Installation
+Simply pull it into your project via composer:
+```
+composer require tamkeenlms/laravel-data-selector
+```
+
+Now, for each model you have you will create a Selector class, one that will extend _DataSelector\Selector_, and then you will get to call this selector and ask it for x or y. I suggest you create a new directory for your selectors under _/app_.
 ```php
 <?php namespace app\selectors;
 class Clients extends DataSelector\Selector{
